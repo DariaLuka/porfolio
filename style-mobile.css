@@ -1,0 +1,345 @@
+/* ============================================================
+   MOBILE STYLES (≤768px)
+   Clean / Structured / No Conflicts
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. Hide Desktop Elements
+------------------------------------------------------------ */
+/* Force-kill all desktop layers that might be overlapping */
+.about-section,
+.video-wrapper,
+.scroll-videos-wrapper,
+.scroll-text-wrapper,
+.top-bar,
+.down-arrow,
+.custom-cursor {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+/* ------------------------------------------------------------
+   2. Base Layout
+------------------------------------------------------------ */
+body {
+  margin: 0;
+  background: #000;
+  overflow: hidden;
+  font-family: "Nohemi", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  cursor: auto;
+}
+
+#mobileWrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------
+   3. Background Videos
+------------------------------------------------------------ */
+#mobileVideosWrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+    pointer-events: none; /* Prevent clicks/taps */
+}
+
+#mobileVideosWrapper video {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+    pointer-events: none; /* Prevent clicks/taps */
+}
+
+/* ------------------------------------------------------------
+   4. Overlay
+------------------------------------------------------------ */
+#mobileOverlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+body.info-open #mobileOverlay {
+  opacity: 0.95;
+  pointer-events: auto;
+}
+
+/* ------------------------------------------------------------
+   5. Info Text Panel (Scrollable)
+------------------------------------------------------------ */
+#mobileTextWrapper {
+  position: fixed;        /* stays over videos */
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  transform: translateY(100%);
+  transition: transform 0.6s cubic-bezier(.4,0,.2,1);
+    padding: 60px 30px; /* padding around edges */
+}
+
+body.info-open #mobileTextWrapper {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Scrollable inner content */
+#mobileTextWrapper .scrollable-content {
+  height: 100%;
+  overflow-y: auto;
+  padding: 60px 30px;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
+}
+
+/* Main headings and text */
+#mobileTextWrapper h1 {
+  font-size: 11vw;
+  line-height: 0.95;
+  margin: 0 0 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+#mobileTextWrapper h2 {
+  font-size: 1rem;
+  font-weight: 300;
+  margin: 0 0 40px;
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+}
+
+#mobileTextWrapper p {
+  font-size: rem;
+  line-height: 1.6;
+  font-weight: 300;
+  opacity: 0.9;
+  max-width: 90%;
+}
+
+/* ------------------------------------------------------------
+   5a. Two-Column Section (Awards / Contact)
+------------------------------------------------------------ */
+.info-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.info-columns .column {
+  flex: 1 1 45%;
+  min-width: 140px;
+}
+
+.info-columns h3 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.info-columns ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.info-columns li {
+  font-size: 0.7rem;
+  line-height: 2;
+  margin-bottom: 6px;
+}
+
+.info-columns a {
+  color: white;
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------
+   6. Reel / Info Button (Clean Version)
+------------------------------------------------------------ */
+#infoToggle {
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 60px;
+  height: 35px;
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.08); /* light glass effect */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+
+  font-family: "Nohemi", sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 10;
+  transition:
+    width 0.4s cubic-bezier(.4,0,.2,1),
+    border-radius 0.4s cubic-bezier(.4,0,.2,1),
+    background 0.3s ease,
+    border 0.3s ease;
+}
+
+/* Subtle highlight */
+#infoToggle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.25),
+    rgba(255,255,255,0.05) 40%,
+    transparent 60%
+  );
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Active Circle State */
+#infoToggle.active {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+}
+
+/* Text inside button */
+.btn-text {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Arrow */
+.btn-icon {
+  position: absolute;
+  width: 18px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Hide text on active */
+#infoToggle.active .btn-text {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* Show arrow on active */
+#infoToggle.active .btn-icon {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Make all text inside the info panel white */
+#mobileTextWrapper,
+#mobileTextWrapper h1,
+#mobileTextWrapper h2,
+#mobileTextWrapper p,
+#mobileTextWrapper li,
+#mobileTextWrapper a,
+#mobileTextWrapper h3 {
+  color: #fff !important;
+}
+
+.info-columns {
+  display: flex;
+  flex-direction: column; /* Force vertical stack */
+  gap: 40px;             /* Space between Awards and Contact */
+  margin-top: 30px;
+  width: 100%;
+}
+#awardsColumn {
+  flex: 1 1 auto;
+  width: 100%;           /* Take full width */
+  max-width: 100%;
+}
+
+#contactColumn {
+  flex: 1 1 auto;
+  width: 100%;           /* Take full width */
+  max-width: 100%;
+  margin-top: 10px;      /* Extra breathing room */
+}
+/* Shrink contact text specifically */
+#contactColumn h3 {
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.5;
+}
+#contactColumn p {
+  font-size: 0.9rem; /* Smaller size to prevent overflow */
+  line-height: 1.4;
+  margin-bottom: 8px;
+  word-break: break-all; /* Breaks long emails if they hit the edge */
+  opacity: 0.8;
+  margin-top: 35px;
+}
+.info-columns h3 {
+  font-size: 0.rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+/* style-mobile.css */
+
+.award-item {
+  position: relative;
+  padding: 15px 0;       /* Slightly more padding for easier tapping */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  line-height: 1.3;
+  font-size: 0.85rem;    /* Better size for mobile readability */
+}
+
+#award-indicator {
+  position: fixed;
+  top: 0;
+  /* Adjust 'right' to control distance from the edge of the screen */
+  right: 50px; 
+  
+  /* 16:9 proportions (e.g., 24px / 13.5px) */
+  width: 202.5px;
+  height: 360px;
+  
+  background: #ffffff;
+  z-index: 100000;      /* Above everything */
+  opacity: 0;
+  pointer-events: none;
+  
+  /* Start slightly above screen */
+ 
+  transition:  opacity 0.3s ease;
+}
+
+#award-indicator.show {
+  opacity: 1;
+}

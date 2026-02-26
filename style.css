@@ -1,0 +1,403 @@
+@font-face {
+  font-family: "Nohemi";
+  src: url("Nohemi-Light.otf") format("opentype");
+  font-weight: 200; /* Medium weight */
+  font-style: normal;
+  font-display: swap;
+}
+
+.mobile-only {
+  display: none; /* hide on desktop */
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block; /* show on mobile */
+  }
+}
+
+
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  overflow: hidden; /* prevent physical scroll */
+  height: 100vh;
+
+  cursor: none; /* hides the default cursor */
+
+}
+.top-bar {
+  position: fixed;
+  top: 0%;
+  left: 0;
+  width: 100%;
+  height: var(--bar-height, 160px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  /* CHANGE THIS: */
+  z-index: 99999; 
+  box-sizing: border-box;
+  transition: height 0.05s linear;
+  /* Ensure the bar itself lets clicks through to things behind it, 
+     but the links inside stay clickable */
+  pointer-events: none; 
+}
+
+.corner-text {
+  font-family: "Nohemi", sans-serif;
+  font-size: 10rem;
+  color: #fff;
+
+  --text-scale: 1;
+
+  transform-origin: left top;
+  transform: scale(var(--text-scale));
+padding-left: 1%;;
+  transition: transform 0.05s linear;
+  will-change: transform;
+    line-height: 0.9;
+  white-space: nowrap;
+    z-index: 0;
+
+}
+
+.corner-text {
+  opacity: 0;
+  animation: fadeSlideText 1s forwards cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.corner-text-inner {
+  font-family: "Nohemi", sans-serif;
+  font-size: 15rem;
+  color: #fff;
+padding-top:3%;
+  --text-scale: 1;
+
+  display: inline-block;
+  transform-origin: left top;
+  transform: scale(var(--text-scale));
+
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+
+@keyframes fadeSlideText {
+  0% {
+    opacity: 0;
+    transform: scale(var(--text-scale, 1)) translateY(70px); /* start lower */
+  }
+  100% {
+    opacity: 1;
+    transform: scale(var(--text-scale, 1)) translateY(0); /* end at final position */
+  }
+}
+
+
+
+/* RIGHT CONTAINER */
+.top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+ 
+  text-align: right;
+ pointer-events: auto;
+ z-index: 5000;
+}
+
+/* ROLE TEXT */
+.role-text {
+    font-family: "Nohemi", sans-serif;
+padding-top: 10px;
+padding-right:30px;
+  color: #fff;
+  font-size: 1rem;
+  opacity: 0.8;
+  white-space: nowrap;
+   pointer-events: none;
+}
+
+/* LINKS ROW */
+.top-links {
+  display: flex;
+  gap: 16px;
+ 
+  pointer-events: auto;
+ z-index: 50000;
+}
+
+.top-links a {
+    font-family: "Nohemi", sans-serif;
+padding-right:30px;
+ padding-top: 3%;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  pointer-events: auto;
+ z-index: 50000;
+}
+
+.top-links a:hover {
+  opacity: 0.7;
+}
+
+
+
+
+.sub-text {
+  font-family: "Nohemi", sans-serif;
+  font-weight: 500;
+  font-size: 1.3rem;          /* smaller than main text */
+  color: #fff;
+  margin-left:11px;
+  transform-origin: left top;
+  transform: scale(var(--text-scale, 1)) translateY(20px); /* same behavior as main text */
+  opacity: 0;
+  animation: fadeSlideText 1s forwards cubic-bezier(0.77, 0, 0.175, 1);
+  animation-delay: 0.2s;      /* slightly after main text */
+  transition: transform 0.05s linear;
+}
+
+
+/* Container for video */
+.video-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+   z-index: 500000;
+}
+
+.video-container {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: slideIn 1.5s forwards cubic-bezier(0.77, 0, 0.175, 1);;
+  animation-delay: 0.5s; /* delay slightly after text animation */
+  pointer-events: none;
+}
+
+.video-inner {
+  transform: translateY(0) scale(1.5);
+  transform-origin: center center;
+  transition: transform 0.05s linear;
+  object-fit: cover; /* scale to fill wrapper while preserving aspect ratio */
+pointer-events: none;
+}
+
+
+/* Video itself */
+#centerVideo {
+  width: 80vw;
+  max-height: 90vh;
+  pointer-events: none;
+  /*border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.5);
+
+  /* scale controlled by CSS variable (JS) */
+  transform: scale(var(--scale, 0.5));
+  transition: transform 0.05s linear;
+}
+
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999; /* Higher than everything else */
+  mix-blend-mode: difference;
+
+  margin: 0 !important;
+  padding: 0 !important;
+  
+  /* Remove any existing transition or transform that might fight JS */
+  transition: none !important;
+  will-change: transform;
+}
+
+
+/* --- Keyframes for automatic slide-in --- */
+@keyframes slideIn {
+  0% {
+    top: 100%; /* below viewport */
+  }
+  100% {
+    top: 70%; /* middle of viewport */
+    transform: translate(-50%, -50%);
+  }
+}
+
+.about-section {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  color: white;
+  font-family: "Nohemi", sans-serif;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: 20000;
+}
+.about-section .award-item {
+  line-height: 2;
+}
+.about-text {
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+.about-meta {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+#desktop-award-indicator {
+  position: fixed;
+  width: 240px;
+  height: 420px;
+  pointer-events: none;
+  opacity: 0;
+  transition: top 0.1s ease, left 0.1s ease, opacity 0.3s ease;
+
+  /* Prevent blending from cursor */
+  mix-blend-mode: normal;   /* override */
+  isolation: isolate;       /* ensure normal stacking context */
+  z-index: 100000;           /* above most elements, below cursor if needed */
+}
+#desktop-award-indicator.show {
+  opacity: 1;
+}
+
+.down-arrow {
+  position: fixed;
+  bottom: 40px; /* distance from bottom of screen */
+  left: 50%;
+  transform: translateX(-50%) translateY(20px); /* start slightly below */
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3000;
+
+ 
+}
+
+.about-section a, 
+.contact-column a {
+  color: #fff !important;         /* Forces the color to white */
+  text-decoration: none;         /* Removes the default underline */
+  transition: opacity 0.3s ease;  /* Makes the hover feel smooth */
+}
+
+/* Add a hover state so users know it's still a link */
+.about-section a:hover, 
+.contact-column a:hover {
+  opacity: 0.7;
+  text-decoration: underline;    /* Optional: shows underline only on hover */
+
+}
+.down-arrow {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 3000;
+}
+
+#desktop-award-indicator video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  
+  /* Prevent blending from cursor */
+  mix-blend-mode: normal;   /* override */
+  isolation: isolate;       /* ensure normal stacking context */
+  z-index: 100000; 
+}
+
+.about-section .award-item {
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+
+}
+
+.about-section .award-item:hover {
+  opacity: 1;
+  
+  /* Prevent blending from cursor */
+  mix-blend-mode: normal;   /* override */
+  isolation: isolate;       /* ensure normal stacking context */
+  z-index: 100000; 
+}
+
+.scroll-text-wrapper {
+  position: fixed;
+  top: 50%;        /* vertically center */
+  left: 0;         /* full width for reference */
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: flex;
+  justify-content: flex-start; /* start at right side via JS */
+  align-items: center;
+  z-index: 1000;
+}
+
+#scrollText {
+  font-family: "Nohemi", sans-serif;
+  font-size: 40rem;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+
+  transform: translateX(100vw) translateY(-50%); /* fully offscreen right */
+  transition: transform 0.05s linear;           /* optional smoothness */
+  will-change: transform;
+}
+
+
+
+
+
+.scroll-videos-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  z-index: 5000;
+}
+
+.scroll-video {
+  position: absolute;        /* independent positioning */
+  left: 50%;                 /* center horizontally */
+  transform: translateX(-50%) translateY(120vh);
+  width: 50%;
+  height: 50%;
+  object-fit: contain;
+  border-radius: 8px;
+  pointer-events: auto;
+
+  will-change: transform;
+}
+
+
