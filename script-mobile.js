@@ -86,23 +86,33 @@ indicatorVideo.style.objectFit = "cover";
 indicator.appendChild(indicatorVideo);
 
 awardItems.forEach(item => {
-  item.addEventListener('pointerdown', () => {
-    // Highlight clicked award
+  item.addEventListener('pointerdown', (e) => {
+    // 1. Highlight clicked award
     item.classList.add('is-active');
 
-    // Position indicator
-    const rect = item.getBoundingClientRect();
-    let verticalCenter = rect.top + (rect.height / 2) - (indicator.offsetHeight / 2);
+    // 2. Position indicator near finger/cursor
+    const indicatorWidth = indicator.offsetWidth;
+    const indicatorHeight = indicator.offsetHeight;
+    
+    // Offset the indicator so it doesn't appear directly under the finger (blocking visibility)
+    let posX = e.clientX + 20; 
+    let posY = e.clientY - (indicatorHeight / 2);
 
-    // Clamp so indicator stays inside viewport
-    const minY = 0; // top limit
-    const maxY = window.innerHeight - indicator.offsetHeight; // bottom limit
-    verticalCenter = Math.max(minY, Math.min(verticalCenter, maxY));
+    // 3. Clamping (Keep inside screen bounds)
+    const padding = 10;
+    // Right edge check
+    if (posX + indicatorWidth > window.innerWidth - padding) {
+      posX = e.clientX - indicatorWidth - 20; // Flip to left side if no room on right
+    }
+    // Top/Bottom edge check
+    posY = Math.max(padding, Math.min(posY, window.innerHeight - indicatorHeight - padding));
 
-    indicator.style.transform = `translateY(${verticalCenter}px) scale(1)`;
+    indicator.style.left = `${posX}px`;
+    indicator.style.top = `${posY}px`;
+    indicator.style.transform = `scale(1)`;
     indicator.classList.add('show');
 
-    // Change video
+    // 4. Change video
     const videoSrc = item.getAttribute('data-video');
     if (indicatorVideo.src !== videoSrc) {
       indicatorVideo.src = videoSrc;
@@ -111,7 +121,6 @@ awardItems.forEach(item => {
     }
   });
 
-  // Hide on release / pointer leave
   const hideIndicator = () => {
     item.classList.remove('is-active');
     indicator.classList.remove('show');
@@ -120,4 +129,6 @@ awardItems.forEach(item => {
 
   item.addEventListener('pointerup', hideIndicator);
   item.addEventListener('pointerleave', hideIndicator);
+  // Important for mobile to prevent stuck indicators
+  item.addEventListener('pointercancel', hideIndicator); 
 });

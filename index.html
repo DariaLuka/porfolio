@@ -10,7 +10,10 @@
 </head>
 <body>
 
-  <div class="custom-cursor" id="cursor"></div>
+  <div class="custom-cursor" id="cursor">
+    <span class="cursor-label" id="cursorLabel"></span>
+    <span class="cursor-description" id="cursorDesc"></span>
+  </div>
   <div id="desktop-award-indicator"></div>
 
   <div class="down-arrow" id="downArrow">
@@ -92,18 +95,18 @@
     </div>
   </div>
 
-  <div class="scroll-videos-wrapper" id="scrollVideosWrapper">
-    <video class="scroll-video" src="reel.mp4" muted loop playsinline></video>
-    <video class="scroll-video" src="video_1.mp4" muted loop playsinline></video>
-    <video class="scroll-video" src="video_2.mp4" muted loop playsinline></video>
-    <video class="scroll-video" src="video_3.mp4" muted loop playsinline></video>
-    <video class="scroll-video" src="video_4.mp4" muted loop playsinline></video>
-  </div>
+<div class="scroll-videos-wrapper" id="scrollVideosWrapper">
+  <video class="scroll-video" src="reel.mp4" data-desc="Showreel 2025" muted loop playsinline></video>
+  <video class="scroll-video" src="video_1.mp4" data-desc="Motion design stworzony na potrzeby międzynarodowej konferencji Kongres Nowej Mobilności 2024" muted loop playsinline></video>
+  <video class="scroll-video" src="video_2.mp4" data-desc="Video promocyjne dla Radia Łódź prezentowane w ramach kina plenerowego 'Polówka'" muted loop playsinline></video>
+  <video class="scroll-video" src="video_3.mp4" data-desc="Branding stworzony na potrzeby obchodów urodzin 95-lecia Radia Łódź" muted loop playsinline></video>
+</div>
 
 <div id="mobileWrapper" class="mobile-only">
   <div id="mobileVideosWrapper"></div>
   <div id="mobileOverlay"></div>
   <div id="mobileTextWrapper">
+    <div class="scrollable-content">
     <div id="award-indicator"></div>
     <h1>Daria Łuka</h1>
     <h2>Motion Designer, Creative Coder</h2>
@@ -127,7 +130,7 @@
   <div class="column" id="contactColumn">
   <h3>Contact</h3>
   <p><a href="mailto:daria.luka.kontakt@gmail.com" class="email-link">daria.luka.kontakt@gmail.com</a></p>
-
+</div>
 </div>
     </div>
   </div>
@@ -138,7 +141,7 @@
       <svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 10l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
     </button>
   </div>
-
+</div> <div id="activeProjectTitle" class="project-title-overlay"></div>
   <script src="script.js"></script>
   <script src="script-mobile.js"></script>
 </body>
