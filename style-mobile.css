@@ -1,237 +1,240 @@
 /* ============================================================
-   MOBILE STYLES (≤768px)
+   1. GLOBAL RESET & DESKTOP SUPPRESSION
    ============================================================ */
+@media (max-width: 768px) {
+  body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    overflow: hidden; /* Lock the screen scroll */
+    width: 100vw;
+    height: 100vh;
+    font-family: "Nohemi", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 
-/* 1. Hide Desktop Elements */
-.about-section,
-.video-wrapper,
-.scroll-videos-wrapper,
-.scroll-text-wrapper,
-.top-bar,
-.down-arrow,
-.custom-cursor {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
+  /* Force-kill all Desktop-specific layers that block taps */
+  .top-bar,
+  .video-wrapper,
+  .scroll-videos-wrapper,
+  .scroll-text-wrapper,
+  .about-section,
+  .custom-cursor,
+  .down-arrow,
+  #desktop-award-indicator {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
 
-/* 2. Base Layout */
-body {
-  margin: 0;
-  background: #000;
-  overflow: hidden; /* Prevents background from scrolling */
-  font-family: "Nohemi", sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+  .mobile-only {
+    display: block !important;
+  }
 
-#mobileWrapper {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
+  /* ============================================================
+     2. MOBILE WRAPPER & BACKGROUND VIDEOS
+     ============================================================ */
+  #mobileWrapper {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 10;
+  }
 
-/* 3. Background Videos Layer */
-#mobileVideosWrapper {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
-  pointer-events: none;
-}
+  #mobileVideosWrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    pointer-events: none;
+  }
 
-#mobileVideosWrapper video {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+  #mobileVideosWrapper video {
+    flex: 1;
+    width: 100%;
+    height: 33.33vh;
+    object-fit: cover;
+  }
 
-/* 4. Overlay Background */
-#mobileOverlay {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  z-index: 2;
-  pointer-events: none;
-}
+  #mobileOverlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    z-index: 2;
+    pointer-events: none;
+  }
 
-body.info-open #mobileOverlay {
-  opacity: 0.95;
-  pointer-events: auto;
-}
+  body.info-open #mobileOverlay {
+    opacity: 0.85;
+  }
 
-/* 5. Info Text Panel (The Window) */
-#mobileTextWrapper {
-  position: fixed;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none; /* Mouse clicks through when closed */
-  transform: translateY(100%);
-  transition: transform 0.6s cubic-bezier(.4, 0, .2, 1);
-  overflow: hidden; /* Keeps scroll inside child */
-}
+  /* ============================================================
+     3. INFO PANEL (The Sliding Sheet)
+     ============================================================ */
+  #mobileTextWrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 100; /* Below the button, above videos */
+    background: transparent; /* Overlay handles the dark background */
+    transform: translateY(100%);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    visibility: visible !important;
+  }
 
-body.info-open #mobileTextWrapper {
-  transform: translateY(0);
-  pointer-events: auto; /* Catches mouse/touch when open */
-}
+  body.info-open #mobileTextWrapper {
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 
-/* 5a. The Scrollable Content (The actual text container) */
-#mobileTextWrapper .scrollable-content {
-  width: 100%;
-  height: 100%;
-  overflow-y: auto; /* Standard scrolling */
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
-  
-  /* Margins/Padding implementation */
-  box-sizing: border-box;
-  padding-top: 100px;
-  padding-left: 40px;
-  padding-right: 30px;
-  padding-bottom: 150px; /* Space for the button at the bottom */
-  
-  display: flex;
-  flex-direction: column;
-  color: #fff !important;
-}
+  .scrollable-content {
+    height: 100%;
+    overflow-y: auto;
+    padding: 80px 30px 120px; /* Extra bottom padding for button clearance */
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    color: #fff;
+  }
 
-/* Hide Scrollbar for a clean look */
-#mobileTextWrapper .scrollable-content::-webkit-scrollbar {
-  display: none;
-}
-#mobileTextWrapper .scrollable-content {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
+  #mobileTextWrapper h1 {
+    font-size: 12vw;
+    line-height: 0.9;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+  }
 
-/* 6. Typography */
-#mobileTextWrapper h1 {
-  font-size: 11vw;
-  line-height: 0.95;
-  margin: 0 0 15px -5px; /* Offset for large typography */
-  font-weight: 600;
-  text-transform: uppercase;
-}
+  #mobileTextWrapper h2 {
+    font-size: 0.9rem;
+    font-weight: 300;
+    margin-bottom: 30px;
+    opacity: 0.6;
+  }
 
-#mobileTextWrapper h2 {
-  font-size: 1rem;
-  font-weight: 300;
-  margin: 0 0 40px;
-  opacity: 0.7;
-  letter-spacing: 0.05em;
-}
+  #mobileTextWrapper p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 40px;
+    opacity: 0.9;
+  }
 
-#mobileTextWrapper p {
-  font-size: 1rem;
-  line-height: 1.6;
-  font-weight: 300;
-  opacity: 0.9;
-  max-width: 100%;
-  white-space: normal; /* Force wrapping */
-}
+  /* ============================================================
+     4. AWARDS & CONTACT LIST
+     ============================================================ */
+  .info-columns {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
 
-/* 7. Awards & Columns */
-.info-columns {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  margin-top: 30px;
-  width: 100%;
-}
+  .info-columns h3 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+    margin-bottom: 20px;
+  }
 
-.info-columns h3 {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 20px;
-  opacity: 0.5;
-  font-weight: 600;
-}
+  .award-item {
+    position: relative;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    cursor: pointer;
+  }
 
-.award-item {
-  position: relative;
-  padding: 15px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  line-height: 1.4;
-  font-size: 0.85rem;
-  white-space: normal; /* Fix for text going out of screen */
-  word-wrap: break-word;
-  color: #fff;
-}
+  .award-item.is-active {
+    color: #aaa;
+  }
 
-#contactColumn p {
-  font-size: 0.9rem;
-  word-break: break-all;
-  opacity: 0.8;
-}
+  #contactColumn a {
+    color: #fff;
+    text-decoration: underline;
+    font-size: 1.1rem;
+  }
 
-#contactColumn a {
-  color: #fff;
-  text-decoration: underline;
-}
+  #award-indicator {
+    position: fixed;
+    width: 150px;
+    height: 266px;
+    background: #222;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: opacity 0.3s ease;
+  }
 
-/* 8. Info Toggle Button */
-#infoToggle {
-  box-sizing: border-box;
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 35px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: width 0.4s, border-radius 0.4s, background 0.3s;
-}
+  #award-indicator.show {
+    opacity: 1;
+  }
 
-#infoToggle.active {
-  width: 35px;
-  border-radius: 50%;
-}
+  /* ============================================================
+     5. THE MORPHING BUTTON (Info Toggle)
+     ============================================================ */
+  #infoToggle {
+    display: flex !important;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999 !important; /* Always on top */
+    
+    width: 80px;
+    height: 40px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    color: #fff;
+    font-family: "Nohemi", sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+  }
 
-.btn-text { transition: opacity 0.25s; }
-.btn-icon { position: absolute; width: 18px; opacity: 0; transform: translateY(8px); transition: 0.25s; }
+  /* Morph to circle when active */
+  #infoToggle.active {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
 
-#infoToggle.active .btn-text { opacity: 0; }
-#infoToggle.active .btn-icon { opacity: 1; transform: translateY(0); }
+  .btn-text {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
 
-/* 9. Award Indicator (Video Hover/Tap) */
-#award-indicator {
-  position: fixed;
-  top: 50%;
-  right: 20px;
-  width: 150px;
-  height: 266px; /* 16:9 ratio */
-  background: #000;
-  z-index: 100;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-50%) scale(0.8);
-  transition: opacity 0.3s, transform 0.3s;
-  border-radius: 8px;
-  overflow: hidden;
-}
+  #infoToggle.active .btn-text {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 
-#award-indicator.show {
-  opacity: 1;
-  transform: translateY(-50%) scale(1);
+  .btn-icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    opacity: 0;
+    transform: translateY(10px) rotate(180deg); /* Arrow points up initially */
+    transition: all 0.3s ease;
+  }
+
+  #infoToggle.active .btn-icon {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg); /* Arrow rotates/slides in */
+  }
 }

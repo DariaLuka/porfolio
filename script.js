@@ -26,7 +26,7 @@ if (!isMobile() && cursor) {
         
         // Define your two offset distances
         // Small cursor = 25px offset | Large cursor = 50px offset
-        const offset = isGrown ? 75 : 40; 
+        const offset = isGrown ? 40 : 20; 
         
         projectTitleOverlay.style.left = `${e.clientX + offset}px`;
         projectTitleOverlay.style.top = `${e.clientY + offset}px`;

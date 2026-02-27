@@ -1,134 +1,145 @@
-function isMobile() {
-  return window.innerWidth <= 768;
-}
+/**
+ * UNIFIED MOBILE ENGINE - Daria Łuka Portfolio
+ * This script handles: 
+ * 1. The Morphing Info Button
+ * 2. Background Video Grid
+ * 3. Award Video Indicator (Long-press/Tap)
+ */
 
-if (!isMobile()) {
-  console.log("Mobile script disabled (desktop mode)");
-   const cursor = document.getElementById("cursor");
+(function() {
+    // 1. UTILITY: Only run if screen is mobile-sized
+    const isMobileView = () => window.innerWidth <= 768;
 
-  document.addEventListener("mousemove", (e) => {
-    cursor.style.left = e.clientX + "px";
-    cursor.style.top = e.clientY + "px";
-  });
-} else {
+    function initMobile() {
+        console.log("Mobile Script: Initializing...");
 
-  (function () {
+        const body = document.body;
+        const button = document.getElementById("infoToggle");
+        const mobileWrapper = document.getElementById("mobileWrapper");
+        const videoContainer = document.getElementById("mobileVideosWrapper");
+        const awardIndicator = document.getElementById("award-indicator");
 
-    
-console.log("Mobile script loaded");
-  const mobileWrapper = document.getElementById("mobileVideosWrapper");
-  const VIDEO_SRC = "reel.mp4"; // now safely scoped
-  const VIDEO_COUNT = 3;
+        if (!button) {
+            console.error("Mobile Script: #infoToggle not found.");
+            return;
+        }
 
-  const offsets = [0, 550, 1000];
+        // --- A. THE MORPHING BUTTON LOGIC ---
+        // State tracking
+        let isPanelOpen = false;
 
-  for (let i = 0; i < VIDEO_COUNT; i++) {
-    const vid = document.createElement("video");
-    vid.src = VIDEO_SRC;
-    vid.muted = true;
-    vid.loop = true;
-    vid.playsInline = true;
-    vid.preload = "auto";
-    vid.style.width = "100%";
-    vid.style.height = "100%";
-    vid.style.objectFit = "cover";
+        // Force-clear any previous listeners from desktop scripts
+        const cleanButton = button.cloneNode(true);
+        button.parentNode.replaceChild(cleanButton, button);
 
-    mobileWrapper.appendChild(vid);
+        cleanButton.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Stop desktop script from hearing this click
 
-    vid.addEventListener("loadedmetadata", () => {
-      vid.pause();
-      setTimeout(() => {
-        vid.play().catch(() => {});
-      }, offsets[i]);
+            isPanelOpen = !isPanelOpen;
+
+            if (isPanelOpen) {
+                body.classList.add("info-open");
+                cleanButton.classList.add("active");
+                body.style.overflow = "hidden"; // Lock background
+                console.log("MOBILE: Panel is now OPEN");
+            } else {
+                body.classList.remove("info-open");
+                cleanButton.classList.remove("active");
+                body.style.overflow = ""; // Unlock background
+                console.log("MOBILE: Panel is now CLOSED");
+            }
+        });
+
+        // --- B. BACKGROUND VIDEO GENERATOR ---
+        if (videoContainer && videoContainer.children.length === 0) {
+            const SRC = "reel.mp4";
+            for (let i = 0; i < 3; i++) {
+                const v = document.createElement("video");
+                v.src = SRC;
+                v.muted = true;
+                v.loop = true;
+                v.playsInline = true;
+                v.autoplay = true;
+                v.setAttribute('webkit-playsinline', 'true');
+                videoContainer.appendChild(v);
+                v.play().catch(() => { /* Handle silent block */ });
+            }
+        }
+
+        // --- C. AWARD INDICATOR (POINTER EVENTS) ---
+        const awardItems = document.querySelectorAll('#awardsColumn .award-item');
+        if (awardIndicator && awardItems.length > 0) {
+            let indicatorVideo = awardIndicator.querySelector('video');
+            if (!indicatorVideo) {
+                indicatorVideo = document.createElement('video');
+                indicatorVideo.muted = true;
+                indicatorVideo.loop = true;
+                indicatorVideo.playsInline = true;
+                awardIndicator.appendChild(indicatorVideo);
+            }
+
+            awardItems.forEach(item => {
+                // Use pointerdown for instant response on mobile
+                item.addEventListener('pointerdown', (e) => {
+                    const videoSrc = item.getAttribute('data-video');
+                    if (!videoSrc) return;
+
+                    item.classList.add('is-active');
+                    
+                    // Center the indicator near the tap
+                    const iWidth = 150;
+                    const iHeight = 266;
+                    let posX = e.clientX + 20;
+                    let posY = e.clientY - (iHeight / 2);
+
+                    // Keep it on screen
+                    if (posX + iWidth > window.innerWidth) posX = e.clientX - iWidth - 20;
+                    posY = Math.max(10, Math.min(posY, window.innerHeight - iHeight - 10));
+
+                    awardIndicator.style.left = `${posX}px`;
+                    awardIndicator.style.top = `${posY}px`;
+                    awardIndicator.classList.add('show');
+
+                    if (indicatorVideo.src.indexOf(videoSrc) === -1) {
+                        indicatorVideo.src = videoSrc;
+                        indicatorVideo.load();
+                        indicatorVideo.play().catch(() => {});
+                    }
+                });
+
+                const hide = () => {
+                    item.classList.remove('is-active');
+                    awardIndicator.classList.remove('show');
+                    indicatorVideo.pause();
+                };
+
+                item.addEventListener('pointerup', hide);
+                item.addEventListener('pointerleave', hide);
+                item.addEventListener('pointercancel', hide);
+            });
+        }
+    }
+
+    // --- D. EXECUTION & RESIZE PROTECTION ---
+    if (isMobileView()) {
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            initMobile();
+        } else {
+            document.addEventListener("DOMContentLoaded", initMobile);
+        }
+    }
+
+    // Clean refresh on resize to avoid desktop logic leaking in
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (isMobileView()) {
+                // If we just entered mobile mode, reload to clear desktop state
+                location.reload(); 
+            }
+        }, 250);
     });
-  }
-
-  //   const mobileVideosWrapper = document.getElementById("mobileVideosWrapper");
-
-  // window.addEventListener("scroll", () => {
-  //   const scrollY = window.scrollY;
-  //   const windowH = window.innerHeight;
-
-  //   let progress = Math.min(scrollY / windowH, 1);
-
-  //   // Slide videos up
-  //   mobileVideosWrapper.style.transform =
-  //     `translateY(${-progress * 100}%)`;
-
-const button = document.getElementById("infoToggle");
-
-button.addEventListener("click", () => {
-  button.classList.toggle("active");
-  document.body.classList.toggle("info-open");
-});
-
 
 })();
-}
-window.addEventListener("resize", () => {
-  location.reload();
-});
-
-
-
-const awardItems = document.querySelectorAll('.award-item');
-const indicator = document.getElementById('award-indicator');
-
-// Create video element inside the indicator
-let indicatorVideo = document.createElement('video');
-indicatorVideo.autoplay = true;
-indicatorVideo.muted = true;
-indicatorVideo.loop = true;
-indicatorVideo.playsInline = true;
-indicatorVideo.style.width = "100%";
-indicatorVideo.style.height = "100%";
-indicatorVideo.style.objectFit = "cover";
-indicator.appendChild(indicatorVideo);
-
-awardItems.forEach(item => {
-  item.addEventListener('pointerdown', (e) => {
-    // 1. Highlight clicked award
-    item.classList.add('is-active');
-
-    // 2. Position indicator near finger/cursor
-    const indicatorWidth = indicator.offsetWidth;
-    const indicatorHeight = indicator.offsetHeight;
-    
-    // Offset the indicator so it doesn't appear directly under the finger (blocking visibility)
-    let posX = e.clientX + 20; 
-    let posY = e.clientY - (indicatorHeight / 2);
-
-    // 3. Clamping (Keep inside screen bounds)
-    const padding = 10;
-    // Right edge check
-    if (posX + indicatorWidth > window.innerWidth - padding) {
-      posX = e.clientX - indicatorWidth - 20; // Flip to left side if no room on right
-    }
-    // Top/Bottom edge check
-    posY = Math.max(padding, Math.min(posY, window.innerHeight - indicatorHeight - padding));
-
-    indicator.style.left = `${posX}px`;
-    indicator.style.top = `${posY}px`;
-    indicator.style.transform = `scale(1)`;
-    indicator.classList.add('show');
-
-    // 4. Change video
-    const videoSrc = item.getAttribute('data-video');
-    if (indicatorVideo.src !== videoSrc) {
-      indicatorVideo.src = videoSrc;
-      indicatorVideo.load();
-      indicatorVideo.play().catch(() => {});
-    }
-  });
-
-  const hideIndicator = () => {
-    item.classList.remove('is-active');
-    indicator.classList.remove('show');
-    indicatorVideo.pause();
-  };
-
-  item.addEventListener('pointerup', hideIndicator);
-  item.addEventListener('pointerleave', hideIndicator);
-  // Important for mobile to prevent stuck indicators
-  item.addEventListener('pointercancel', hideIndicator); 
-});
