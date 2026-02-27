@@ -27,7 +27,7 @@
       <span class="corner-text-inner" id="cornerText">Daria Łuka</span>
     </div>
     <div class="top-right">
-      <div class="role-text">Motion Designer | Creative coder</div>
+      <div class="role-text">Motion Designer | Creative Coder</div>
       <div class="top-links">
         <a href="mailto:daria.luka.kontakt@gmail.com">Email</a>
         <a href="https://www.instagram.com/keep_it_graphic/" target="_blank">Instagram</a>
@@ -77,12 +77,12 @@
     </div>
   </div>
 
-  <div class="scroll-videos-wrapper" id="scrollVideosWrapper">
-    <video class="scroll-video" src="reel.mp4" data-desc="Showreel 2025" muted loop playsinline></video>
-    <video class="scroll-video" src="video_1.mp4" data-desc="Motion design stworzony na potrzeby Kongres Nowej Mobilności 2024" muted loop playsinline></video>
-    <video class="scroll-video" src="video_2.mp4" data-desc="Video promocyjne dla Radia Łódź - 'Polówka'" muted loop playsinline></video>
-    <video class="scroll-video" src="video_3.mp4" data-desc="Branding 95-lecia Radia Łódź" muted loop playsinline></video>
-  </div>
+<div class="scroll-videos-wrapper" id="scrollVideosWrapper">
+  <video class="scroll-video" src="reel.mp4" data-desc="Showreel 2025" muted loop playsinline></video>
+  <video class="scroll-video" src="video_1.mp4" data-desc="Motion design created for the International New Mobility Congress Conference 2024" muted loop playsinline></video>
+  <video class="scroll-video" src="video_2.mp4" data-desc="Promotional video for Radio Łódź shown at 'Polówka' open-air cinema festival" muted loop playsinline></video>
+  <video class="scroll-video" src="video_3.mp4" data-desc="Branding for the 95th anniversary of Radio Łódź" muted loop playsinline></video>
+</div>
 
   <div id="mobileWrapper" class="mobile-only">
     <div id="mobileVideosWrapper"></div>
@@ -130,5 +130,29 @@
 
   <script src="script.js"></script>
   <script src="script-mobile.js"></script>
+<script>
+  const mainVideo = document.getElementById('mainVideo');
+  const allVideos = document.querySelectorAll('video');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const video = entry.target;
+
+      if (entry.isIntersecting) {
+        // If it's the MAIN video, play it automatically when seen
+        if (video.id === 'centerVideo') {
+          video.play();
+        }
+      } else {
+        // For ANY video, pause it when it leaves the screen
+        video.pause();
+      }
+    });
+  }, { threshold: 0.2 });
+
+  allVideos.forEach(video => {
+    observer.observe(video);
+  });
+</script>
 </body>
 </html>
