@@ -212,26 +212,19 @@ pointer-events: none;
   position: fixed;
   top: 0;
   left: 0;
-  width: 40px; /* Base size */
+  width: 40px;
   height: 40px;
   background: white;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 999999; 
+  z-index: 999999;
   mix-blend-mode: difference;
-  
-  /* Flexbox to center the text */
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  /* Smooth transition for size changes */
-  transition: width 0.3s ease, height 0.3s ease !important;
-  will-change: transform, width, height;
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
-/* The text inside the cursor */
-/* The "PLAY/STOP" inside the circle */
 .cursor-label {
   font-family: "Nohemi", sans-serif;
   font-size: 10px;
@@ -240,19 +233,23 @@ pointer-events: none;
   color: black; 
   opacity: 0;
 }
-/* NEW: The description outside the circle */
+
 .cursor-description {
-  position: absolute;
-  left: calc(100% + 15px); /* Position it to the right of the circle */
+  position: fixed; /* MUST be fixed */
+  left: 0;
+  top: 0;
   white-space: nowrap;
   font-family: "Nohemi", sans-serif;
   font-size: 14px;
   text-transform: uppercase;
   color: white;
+  pointer-events: none;
+  z-index: 1000000;
   opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: translateX(-10px); /* Slight slide-in effect */
+  transition: opacity 0.2s ease;
 }
+
+
 
 /* State when hovering over a video */
 .custom-cursor.video-hover {
@@ -268,48 +265,24 @@ pointer-events: none;
 
 .project-title-overlay {
   position: fixed;
-
-transform: translate(20px, 20px);  /* Rest of your styles */
-  font-family: "Nohemi", sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: white;
-  z-index: 6000;
-  pointer-events: none;
-  mix-blend-mode: difference;
-  opacity: 0;
-
-  /* Updated Transition */
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
-              transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* NEW: Define the text box dimensions */
-  max-width: 300px;           /* Sets the maximum width of the text block */
-  text-align: left;         /* Optional: aligns text within the box (left, center, or right) */
-  line-height: 1.4;         /* Recommended: adds space between the new lines for readability */
-  white-space: normal;       /* Ensures text wraps onto the next line */
-  
-  /* Rest of your styles */
-position: fixed;
   max-width: 300px;
   line-height: 1.4;
   white-space: normal;
   pointer-events: none;
   z-index: 6000;
+  color: white;
+  font-family: "Nohemi", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
   mix-blend-mode: difference;
-  opacity: 0;
-
-  /* This allows the text to glide smoothly when the offset changes */
-  transition: opacity 0.5s ease, 
-              left 0.2s ease-out, 
-              top 0.2s ease-out;
+  
+  /* Smooth fade & movement */
+  transition: opacity 0.1s ease, left 0.2s ease-out, top 0.2s ease-out;
+  opacity: 0; /* start hidden */
 }
-
 .project-title-overlay.show {
   opacity: 1;
-  transform: translateY(0);
 }
-
 /* --- Keyframes for automatic slide-in --- */
 @keyframes slideIn {
   0% {
@@ -377,7 +350,17 @@ position: fixed;
 
  
 }
-
+#activeProjectTitle {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease; /* fade effect */
+  position: fixed; /* so it can follow cursor */
+  left: 0;
+  top: 0;
+}
+#activeProjectTitle.show {
+  opacity: 1;
+}
 .about-section a, 
 .contact-column a {
   color: #fff !important;         /* Forces the color to white */
@@ -430,13 +413,12 @@ position: fixed;
 
 .scroll-text-wrapper {
   position: fixed;
-  top: 50%;        /* vertically center */
-  left: 0;         /* full width for reference */
+  top: 50%;
+  left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
   display: flex;
-  justify-content: flex-start; /* start at right side via JS */
   align-items: center;
   z-index: 1000;
 }
@@ -454,6 +436,16 @@ position: fixed;
   will-change: transform;
 }
 
+.scrollTextItem {
+  position: absolute;
+  font-family: "Nohemi", sans-serif;
+  font-size: 40rem;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  transform: translateX(100vw) translateY(-50%);
+  will-change: transform;
+}
 
 
 
@@ -481,4 +473,24 @@ position: fixed;
   will-change: transform;
 }
 
+.cooperation-message {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(0,0,0,0.6);
+  padding: 12px 20px;
+  border-radius: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+  z-index: 1000;
+    font-family: "Nohemi", sans-serif;
+  font-size: 9rem;
+}
+.cooperation-message.show {
+  opacity: 1;
+}
 
