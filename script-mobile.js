@@ -53,7 +53,7 @@
 
         // --- B. BACKGROUND VIDEO GENERATOR ---
         if (videoContainer && videoContainer.children.length === 0) {
-            const SRC = "reel.mp4";
+            const SRC = "reel_small.mp4";
             for (let i = 0; i < 3; i++) {
                 const v = document.createElement("video");
                 v.src = SRC;
