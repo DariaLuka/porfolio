@@ -32,6 +32,13 @@
     display: block !important;
   }
 
+  #award-indicator video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* or 'contain' depending on whether you want full coverage or full video visible */
+  display: block;
+  border-radius: 4px; /* optional: match the container */
+}
   /* ============================================================
      2. MOBILE WRAPPER & BACKGROUND VIDEOS
      ============================================================ */

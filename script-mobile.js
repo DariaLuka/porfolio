@@ -67,6 +67,19 @@
             }
         }
 
+        const indicatorVideo = document.createElement('video');
+indicatorVideo.autoplay = true;
+indicatorVideo.muted = true;
+indicatorVideo.loop = true;
+indicatorVideo.playsInline = true;
+
+// Add proper sizing
+indicatorVideo.style.width = "100%";
+indicatorVideo.style.height = "100%";
+indicatorVideo.style.objectFit = "cover";
+
+awardIndicator.appendChild(indicatorVideo);
+
         // --- C. AWARD INDICATOR (POINTER EVENTS) ---
         const awardItems = document.querySelectorAll('#awardsColumn .award-item');
         if (awardIndicator && awardItems.length > 0) {
