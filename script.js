@@ -81,20 +81,30 @@ vid.dataset.scale = (1 + Math.random() * 0.7).toFixed(2);
         cursorDesc.textContent = "";
       });
 
-      vid.addEventListener("click", () => {
-        [...scrollVideosMotion, ...scrollVideosBranding].forEach((v) => {
-          v.pause();
-          v.muted = true;
-        });
-        if (vid.paused) {
-          vid.muted = false;
-          vid.play();
-          cursorLabel.textContent = "Stop";
-        } else {
-          vid.pause();
-          cursorLabel.textContent = "Play";
-        }
-      });
+vid.addEventListener("click", () => {
+  // Pause all other videos
+  [...scrollVideosMotion, ...scrollVideosBranding].forEach((v) => {
+    if (v !== vid) {
+      v.pause();
+      v.muted = true;
+      v.dataset.playing = "false";
+    }
+  });
+
+  // Toggle clicked video manually
+  const isPlaying = vid.dataset.playing === "true";
+
+  if (!isPlaying) {
+    vid.muted = false;
+    vid.play();
+    vid.dataset.playing = "true";
+    cursorLabel.textContent = "Stop";
+  } else {
+    vid.pause();
+    vid.dataset.playing = "false";
+    cursorLabel.textContent = "Play";
+  }
+});
     });
   };
 
