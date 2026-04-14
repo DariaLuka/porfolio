@@ -322,6 +322,65 @@ pointer-events: none;
   opacity: 0.8;
 }
 
+.clients-section {
+  margin-top: 28px;
+}
+
+.clients-section h4 {
+  font-family: "Nohemi", sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: none;
+  text-align: left;
+  margin: 0 0 16px;
+  opacity: 0.85;
+}
+
+.clients-marquee {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.clients-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 26px;
+  align-items: center;
+  animation: marquee 26s linear infinite;
+  min-width: 200%;
+}
+
+.clients-row img {
+  display: block;
+  max-height: 92px;
+  max-width: 230px;
+  width: auto;
+  height: auto;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  opacity: 0.96;
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.25s ease;
+  object-fit: contain;
+  filter: none;
+}
+
+.clients-row img:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 #desktop-award-indicator {
   position: fixed;
   width: 240px;

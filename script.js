@@ -118,8 +118,19 @@ vid.addEventListener("click", () => {
       const rect = item.getBoundingClientRect();
       let y = rect.top + rect.height / 2 - 210;
       y = Math.max(10, Math.min(y, window.innerHeight - 430));
+
+      const indicatorWidth = desktopIndicator.offsetWidth || 240;
+      const xOffset = 100;
+      let x = e.clientX + xOffset;
+      if (x + indicatorWidth > window.innerWidth - 10) {
+        x = e.clientX - indicatorWidth - xOffset;
+      }
+      if (x < 10) {
+        x = 10;
+      }
+
       desktopIndicator.style.top = `${y}px`;
-      desktopIndicator.style.left = `${e.clientX + 100}px`;
+      desktopIndicator.style.left = `${x}px`;
       desktopIndicator.classList.add("show");
 
       const videoSrc = item.getAttribute("data-video");
