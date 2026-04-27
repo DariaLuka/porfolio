@@ -30,7 +30,7 @@ body {
 }
 .top-bar {
   position: fixed;
-  top: 0%;
+  top: 0;
   left: 0;
   width: 100%;
   height: var(--bar-height, 160px);
@@ -38,13 +38,10 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   padding: 20px;
-  /* CHANGE THIS: */
-  z-index: 99999; 
+  z-index: 99999;
   box-sizing: border-box;
   transition: height 0.05s linear;
-  /* Ensure the bar itself lets clicks through to things behind it, 
-     but the links inside stay clickable */
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .corner-text {
@@ -100,47 +97,47 @@ padding-top:3%;
 
 /* RIGHT CONTAINER */
 .top-right {
+  position: fixed;
+  top: 20px;
+  right: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
- 
   text-align: right;
- pointer-events: auto;
- z-index: 5000;
+  pointer-events: auto;
+  z-index: 50000;
 }
 
 /* ROLE TEXT */
 .role-text {
-    font-family: "Nohemi", sans-serif;
-padding-top: 10px;
-padding-right:30px;
+  font-family: "Nohemi", sans-serif;
+  margin: 0;
   color: #fff;
   font-size: 1rem;
   opacity: 0.8;
   white-space: nowrap;
-   pointer-events: none;
+  text-align: right;
+  pointer-events: none;
 }
 
 /* LINKS ROW */
 .top-links {
   display: flex;
   gap: 16px;
- 
+  justify-content: flex-end;
   pointer-events: auto;
- z-index: 50000;
+  z-index: 50000;
 }
 
 .top-links a {
-    font-family: "Nohemi", sans-serif;
-padding-right:30px;
- padding-top: 3%;
+  font-family: "Nohemi", sans-serif;
   color: #fff;
   text-decoration: none;
   font-size: 0.95rem;
   white-space: nowrap;
   pointer-events: auto;
- z-index: 50000;
+  z-index: 50000;
 }
 
 .top-links a:hover {
