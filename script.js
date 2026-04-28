@@ -15,6 +15,7 @@
   const cursor = document.getElementById("cursor");
   const cursorLabel = document.getElementById("cursorLabel");
   const cursorDesc = document.getElementById("cursorDesc");
+  const videoControlButton = document.getElementById("videoControlButton");
 
   projectTitleOverlay.textContent = "";
   projectTitleOverlay.classList.remove("show");
@@ -38,6 +39,29 @@
   let currentAboutOpacity = 0;
   let mouseX = 0;
   let mouseY = 0;
+  let currentActiveVideo = null;
+
+  // Button click handler
+  videoControlButton.addEventListener("click", () => {
+    if (currentActiveVideo) {
+      const url = currentActiveVideo.dataset.behance;
+      if (url) {
+        window.open(url, "_blank");
+      }
+    }
+  });
+
+  const updateButtonText = () => {
+    if (videoControlButton.classList.contains("show")) {
+      videoControlButton.textContent = "details";
+    }
+  };
+
+  // Keep the overlay button label static for the active project
+  [...scrollVideosMotion, ...scrollVideosBranding].forEach((vid) => {
+    vid.addEventListener("play", updateButtonText);
+    vid.addEventListener("pause", updateButtonText);
+  });
 
   // --- Track Mouse Position ---
   document.addEventListener("mousemove", (e) => {
@@ -262,8 +286,20 @@ if (brandingTextProg >= 1) {
           projectTitleOverlay.classList.add("show");
           projectTitleOverlay.style.left = `${mouseX + 40}px`;
           projectTitleOverlay.style.top = `${mouseY + 20}px`;
+
+          // Show button and set active video
+          currentActiveVideo = motionFocus.bestVideo;
+          const currentLink = currentActiveVideo.dataset.behance;
+          if (currentLink) {
+            videoControlButton.textContent = "details";
+            videoControlButton.classList.add("show");
+          } else {
+            videoControlButton.classList.remove("show");
+          }
         } else {
           projectTitleOverlay.classList.remove("show");
+          videoControlButton.classList.remove("show");
+          currentActiveVideo = null;
         }
       }
 
@@ -277,9 +313,26 @@ if (brandingTextProg >= 1) {
             projectTitleOverlay.classList.add("show");
             projectTitleOverlay.style.left = `${mouseX + 40}px`;
             projectTitleOverlay.style.top = `${mouseY + 20}px`;
+
+            // Show button and set active video
+            currentActiveVideo = brandingFocus.bestVideo;
+            const currentLink = currentActiveVideo.dataset.behance;
+            if (currentLink) {
+              videoControlButton.textContent = "details";
+              videoControlButton.classList.add("show");
+            } else {
+              videoControlButton.classList.remove("show");
+            }
           } else {
             projectTitleOverlay.classList.remove("show");
+            videoControlButton.classList.remove("show");
+            currentActiveVideo = null;
           }
+        } else {
+          // No branding videos active, hide overlay and button
+          projectTitleOverlay.classList.remove("show");
+          videoControlButton.classList.remove("show");
+          currentActiveVideo = null;
         }
       }
     },
