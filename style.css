@@ -181,6 +181,7 @@ padding-top:3%;
   animation: slideIn 1.5s forwards cubic-bezier(0.77, 0, 0.175, 1);;
   animation-delay: 0.5s; /* delay slightly after text animation */
   pointer-events: none;
+
 }
 
 .video-inner {
@@ -189,6 +190,7 @@ padding-top:3%;
   transition: transform 0.05s linear;
   object-fit: cover; /* scale to fill wrapper while preserving aspect ratio */
 pointer-events: none;
+
 }
 
 
@@ -197,12 +199,19 @@ pointer-events: none;
   width: 80vw;
   max-height: 90vh;
   pointer-events: none;
+
+
+
+  
   /*border-radius: 10px;
   box-shadow: 0 0 20px rgba(255,255,255,0.5);
 
   /* scale controlled by CSS variable (JS) */
   transform: scale(var(--scale, 0.5));
   transition: transform 0.05s linear;
+  box-shadow:
+    0 0 40px rgba(255,255,255,0.08),
+    0 0 120px rgba(255,255,255,0.04);
 }
 
 .custom-cursor {
@@ -552,9 +561,14 @@ pointer-events: none;
   height: 100%;
   pointer-events: auto;
   z-index: 5000;
+  
+
 }
 
 .scroll-video {
+    position: absolute;
+  left: 50%;
+  top: 0;
   position: absolute;        /* independent positioning */
   left: 50%;                 /* center horizontally */
   transform: translateX(-50%) translateY(120vh);
@@ -565,6 +579,12 @@ pointer-events: none;
   pointer-events: auto;
 
   will-change: transform;
+
+  
+    filter:
+    drop-shadow(0 0 12px rgba(255,255,255,0.08))
+    drop-shadow(0 0 40px rgba(255,255,255,0.04));
+  
 }
 
 .cooperation-message {

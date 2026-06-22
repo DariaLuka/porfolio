@@ -84,8 +84,11 @@
 
   // --- Initialize Videos ---
   const initVideos = (videos) => {
+
     videos.forEach((vid) => {
-vid.dataset.scale = (1 + Math.random() * 0.7).toFixed(2);
+      // USUNIĘTO Math.random() -> teraz każdy film startuje z tą samą bazową skalą
+      vid.dataset.scale = "1.0"; 
+      
       vid.addEventListener("loadedmetadata", () => {
         vid.currentTime = 0.1;
         vid.pause();
@@ -169,38 +172,53 @@ vid.addEventListener("click", () => {
   });
 
   // --- Move Videos Helper ---
-const moveVideos = (videos, prog) => {
-  const step = 1 / videos.length;
-  let bestVideo = null;
-  let minDistance = Infinity;
-  const screenCenter = window.innerHeight / 2;
+// --- Move Videos Helper ---
+  const moveVideos = (videos, prog) => {
+    const step = 1 / videos.length;
+    let bestVideo = null;
+    let minDistance = Infinity;
 
-  videos.forEach((vid, i) => {
-    // Determine how far the video is into its scroll animation
-    let vP = Math.min(Math.max((prog - i * step) / step, 0), 1);
+    videos.forEach((vid, i) => {
+      let vP = Math.min(Math.max((prog - i * step) / step, 0), 1);
 
-    // Start Y position further below viewport so videos are hidden initially
-    const startY = window.innerHeight + 500; // increased to push videos fully off-screen
-    const endY = -window.innerHeight - 350;
-    const curY = startY + (endY - startY) * vP;
+      const centerY = window.innerHeight * 0.25; 
+      const startY = window.innerHeight + 100; 
+      const endY = -window.innerHeight - 100;  
+      
+      let curY;
+      let centerBoost = 0; 
 
-    // Make videos slightly bigger overall, plus subtle growth as they scroll in
-    const baseScale = parseFloat(vid.dataset.scale) || 1;
-    const scale = baseScale + 0.2 * vP; // grows slightly as it moves up
+      // --- SILNIK SNAPPINGU + SKALOWANIE ---
+      if (vP < 0.35) {
+        const localProg = vP / 0.35;
+        curY = startY + (centerY - startY) * localProg;
+        centerBoost = localProg * 0.5; // Płynne rośnięcie do +0.5
+      } else if (vP <= 0.65) {
+        curY = centerY;
+        centerBoost = 0.5;             // Maksymalny rozmiar na środku (+0.5)
+      } else {
+        const localProg = (vP - 0.65) / 0.35;
+        curY = centerY + (endY - centerY) * localProg;
+        centerBoost = (1 - localProg) * 0.5; // Płynne zmniejszanie z powrotem do bazy
+      }
 
-    vid.style.transform = `translateX(-50%) translateY(${curY}px) scale(${scale})`;
+      // Teraz baseScale to zawsze będzie 1.0
+      const baseScale = parseFloat(vid.dataset.scale) || 1;
+      
+      // Wynikowa skala: na dole/górze to 1.0, na samym środku to dokładnie 1.5
+      const scale = baseScale + centerBoost; 
 
-    // Find the video closest to the vertical center of the screen
-    const dist = Math.abs(curY - screenCenter);
-    if (dist < minDistance) {
-      minDistance = dist;
-      bestVideo = vid;
-    }
-  });
+      vid.style.transform = `translateX(-50%) translateY(${curY}px) scale(${scale})`;
 
-  return { bestVideo, minDistance };
-};
+      const dist = Math.abs(curY - centerY);
+      if (dist < minDistance) {
+        minDistance = dist;
+        bestVideo = vid;
+      }
+    });
 
+    return { bestVideo, minDistance };
+  };
   // --- Scroll Engine ---
   window.addEventListener(
     "wheel",
