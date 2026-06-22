@@ -322,8 +322,11 @@ if (brandingTextProg >= 1) {
       }
 
       // --- Branding Overlay ---
+// --- Branding Overlay ---
+      // WYCIĄGAMY ruch wideo przed warunek IF, żeby pozycja aktualizowała się ZAWSZE:
+      const brandingFocus = moveVideos(scrollVideosBranding, brandingTextProg);
+
       if (motionTextProg >= 1) {
-        const brandingFocus = moveVideos(scrollVideosBranding, brandingTextProg);
         if (brandingFocus.bestVideo) {
           if (brandingFocus.minDistance < fadeDistance) {
             const newTitle = brandingFocus.bestVideo.getAttribute("data-desc") || "";
