@@ -40,7 +40,9 @@ body {
   padding: 20px;
   z-index: 99999;
   box-sizing: border-box;
-  transition: height 0.05s linear;
+  /* Height is now driven every animation frame by the JS scroll-easing loop;
+     a CSS transition here would restart on every frame and fight it, causing
+     a rubbery stutter. Removed in favor of the JS-side easing. */
   pointer-events: none;
 }
 
@@ -78,7 +80,8 @@ padding-top:3%;
   transform-origin: left top;
   transform: scale(var(--text-scale));
 
-  transition: transform 0.05s linear;
+  /* Driven every animation frame by the JS scroll-easing loop now — no CSS
+     transition needed (it would just add fighting/lag on top of the lerp). */
   will-change: transform;
 }
 
@@ -187,9 +190,11 @@ padding-top:3%;
 .video-inner {
   transform: translateY(0) scale(1.5);
   transform-origin: center center;
-  transition: transform 0.05s linear;
+  /* Driven every animation frame by the JS scroll-easing loop — a CSS
+     transition here would restart on every frame and fight the JS lerp. */
   object-fit: cover; /* scale to fill wrapper while preserving aspect ratio */
 pointer-events: none;
+will-change: transform;
 
 }
 
@@ -561,8 +566,6 @@ pointer-events: none;
   height: 100%;
   pointer-events: auto;
   z-index: 5000;
-  
-
 }
 
 .scroll-video {
@@ -584,7 +587,69 @@ pointer-events: none;
     filter:
     drop-shadow(0 0 12px rgba(255,255,255,0.08))
     drop-shadow(0 0 40px rgba(255,255,255,0.04));
-  
+
+}
+
+/* Creative Coding auto-scrolling carousel.
+   .creative-carousel = the panel: full viewport, its vertical position is
+   driven by the wheel (rises up from below, holds, then slides up & out to
+   reveal the coop message). Inside, the big title band and the video track
+   each auto-scroll sideways on their own (script.js), independent of the wheel. */
+.creative-carousel {
+  position: fixed;
+  inset: 0;
+  overflow: hidden; /* clip the scrolling marquees */
+  transform: translateY(0); /* JS drives the exit (up); children rise in from below */
+  will-change: transform;
+  pointer-events: none;
+  z-index: 5000;
+}
+
+/* Big "CREATIVE CODING" band, auto-scrolling behind the videos. */
+.cc-title {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: inline-flex;
+  white-space: nowrap;
+  transform: translate(0, calc(-50% + 100vh)); /* start off-screen below; JS raises it */
+  will-change: transform;
+  font-family: "Nohemi", sans-serif;
+  font-size: 40rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #fff;
+  opacity: 1;
+  z-index: 1;
+  pointer-events: none;
+}
+.cc-title span { display: inline-block; }
+
+/* The video row, auto-scrolling in front of the title. */
+.creative-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 3vw;
+  padding: 0 3vw;
+  transform: translate(0, calc(-50% + 100vh)); /* start off-screen below; JS raises it */
+  will-change: transform;
+  z-index: 2;
+}
+
+.creative-item {
+  flex: 0 0 auto;
+  height: 74vh;
+  aspect-ratio: 9 / 16; /* vertical works; keeps a stable width before load */
+  width: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  pointer-events: auto;
+  filter:
+    drop-shadow(0 0 12px rgba(255, 255, 255, 0.08))
+    drop-shadow(0 0 40px rgba(255, 255, 255, 0.04));
 }
 
 .cooperation-message {
@@ -607,4 +672,3 @@ pointer-events: none;
 .cooperation-message.show {
   opacity: 1;
 }
-

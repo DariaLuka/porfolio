@@ -123,6 +123,19 @@
   <video class="scroll-video branding" src="branding_0.mp4" data-desc="Branding created for Radio Łódź 95th aniversary inspired by joy and birthday themes" data-behance="https://www.behance.net/gallery/248356131/RADIOSC-calendar-design" muted loop playsinline></video>
 </div>
 
+<!-- Creative Coding: auto-scrolling carousel. Scroll wheel pushes the whole panel up & reveals the coop message -->
+<div class="creative-carousel" id="creativeCarousel">
+  <div class="cc-title" id="ccTitle">
+    <span>CREATIVE CODING&nbsp;&nbsp;&nbsp;</span><span>CREATIVE CODING&nbsp;&nbsp;&nbsp;</span>
+  </div>
+  <div class="creative-track" id="creativeTrack">
+    <video class="creative-item" src="DariaŁuka_demo_1.mp4" data-desc="Creative coding 01" data-behance="" autoplay muted loop playsinline></video>
+    <video class="creative-item" src="DariaŁuka_demo_2.mp4" data-desc="Creative coding 02" data-behance="" autoplay muted loop playsinline></video>
+    <video class="creative-item" src="DariaŁuka_demo_3.mp4" data-desc="Creative coding 03" data-behance="" autoplay muted loop playsinline></video>
+    <video class="creative-item" src="DariaŁuka_demo_4.mp4" data-desc="Creative coding 04" data-behance="" autoplay muted loop playsinline></video>
+  </div>
+</div>
+
   <div id="mobileWrapper" class="mobile-only">
     <div id="mobileVideosWrapper"></div>
     <div id="mobileOverlay"></div>
@@ -209,9 +222,9 @@
       const video = entry.target;
 
       if (entry.isIntersecting) {
-        // If it's the MAIN video, play it automatically when seen
-        if (video.id === 'centerVideo') {
-          video.play();
+        // Autoplay the main reel AND the creative-coding works when on screen.
+        if (video.id === 'centerVideo' || video.classList.contains('creative-item')) {
+          video.play().catch(() => {});
         }
       } else {
         // For ANY video, pause it when it leaves the screen
