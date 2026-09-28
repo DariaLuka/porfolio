@@ -22,6 +22,8 @@
   .about-section,
   .custom-cursor,
   .down-arrow,
+  .section-nav,
+  .about-arrow,
   #desktop-award-indicator {
     display: none !important;
     visibility: hidden !important;

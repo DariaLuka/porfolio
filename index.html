@@ -16,12 +16,6 @@
   </div>
   <div id="desktop-award-indicator"></div>
 
-  <div class="down-arrow" id="downArrow">
-    <svg width="40" height="40" viewBox="0 0 24 24">
-      <path d="M6 10l6 6 6-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-
   <div class="top-bar">
     <div class="corner-text">
       <span class="corner-text-inner" id="cornerText">Daria Łuka</span>
@@ -215,6 +209,17 @@
   <div id="activeProjectTitle" class="project-title-overlay"></div>
 
   <button id="videoControlButton" class="video-control-button">details</button>
+
+  <!-- Section menu: jumps the scroll engine to the start of each category -->
+  <!-- Down arrow, bottom-right, shown with the about section; jumps to Motion Design -->
+  <button class="about-arrow" id="aboutArrow" aria-label="Go to Motion Design">↓</button>
+
+  <nav class="section-nav" id="sectionNav">
+    <a href="#about" data-section="about">About</a><span class="section-nav-sep">|</span>
+    <a href="#motion" data-section="motion">Motion Design</a><span class="section-nav-sep">|</span>
+    <a href="#branding" data-section="branding">Branding</a><span class="section-nav-sep">|</span>
+    <a href="#creative" data-section="creative">Creative Coding</a>
+  </nav>
 
   <div id="cooperationMessage" class="cooperation-message">
   Interested in collaborating? <a href="mailto:daria.luka.kontakt@gmail.com" class="coop-link">Let me know.</a>

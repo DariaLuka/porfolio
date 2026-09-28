@@ -296,40 +296,49 @@ will-change: transform;
   opacity: 1;
 }
 
+/* "Details ↗" link to the active project's Behance page. Styled like the
+   section menu (plain text, same font/size/baseline) and mirrored on the
+   right edge; a thin underline grows in on hover. */
 .video-control-button {
   position: fixed;
   bottom: 20px;
-  left: 20px;
-  background: rgba(255, 255, 255, 0.14);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  padding: 10px 20px;
-  min-width: 0;
+  right: 50px;
+  padding: 0 0 3px;
+  background: none;
+  border: 0;
+  color: #fff;
   font-family: "Nohemi", sans-serif;
-  font-size: 0.92rem;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.22em;
-  border-radius: 999px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  font-size: 0.95rem;
+  line-height: normal;
+  text-transform: capitalize;
+  white-space: nowrap;
   cursor: pointer;
   z-index: 100000;
+  /* underline, drawn as a background so it can animate */
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
   opacity: 0;
+  transform: translateY(8px);
   pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background-size 0.35s ease;
 }
 
-.video-control-button:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.24);
-  border-color: rgba(255, 255, 255, 0.68);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.14);
+.video-control-button::after {
+  content: " \2197"; /* ↗ */
+}
+
+.video-control-button:hover,
+.video-control-button:focus-visible {
+  background-size: 100% 1px;
+  outline: none;
 }
 
 .video-control-button.show {
   opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
 }
 
@@ -703,7 +712,7 @@ will-change: transform;
 
 .cooperation-message {
   position: fixed;
-  bottom: 30px;
+  bottom: 70px; /* clear of the section menu in the bottom-left corner */
   left: 30px;
   font-size: 1.2rem;
   font-weight: bold;
@@ -768,4 +777,83 @@ video.is-loading {
 @media (hover: none) and (pointer: coarse) {
   body { cursor: auto; }
   .custom-cursor { display: none; }
+}
+
+/* Section menu, bottom-left: About | Motion Design | Branding | Creative Coding */
+.section-nav {
+  position: fixed;
+  /* lines up with the coop message text (left 30px + 20px padding) */
+  left: 50px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: "Nohemi", sans-serif;
+  font-size: 0.95rem;
+  color: #fff;
+  z-index: 100000; /* above the full-screen video layers, like the details button */
+  /* hidden on the hero; fades up once the about section arrives (script.js) */
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section-nav.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.section-nav a {
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.55;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+}
+
+.section-nav a:hover,
+.section-nav a.active {
+  opacity: 1;
+}
+
+.section-nav-sep {
+  opacity: 0.35;
+}
+
+/* Down arrow in the bottom-right corner of the about section. Sits where
+   "Details" appears later (same font/size/baseline as the section menu);
+   its opacity follows the about section (script.js). */
+.about-arrow {
+  position: fixed;
+  right: 50px;
+  bottom: 20px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: #fff;
+  font-family: "Nohemi", sans-serif;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100000;
+  animation: about-arrow-bob 1.8s ease-in-out infinite;
+}
+
+.about-arrow:hover,
+.about-arrow:focus-visible {
+  outline: none;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes about-arrow-bob {
+  0%, 100% { transform: translateY(-3px); }
+  50%      { transform: translateY(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-arrow { animation: none; }
 }

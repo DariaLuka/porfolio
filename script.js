@@ -67,7 +67,7 @@
   // Hover label / click-to-play behave the same for the strip and the featured video.
   const creativeItems = Array.from(document.querySelectorAll(".creative-item, .creative-feature"));
   const aboutSection = document.getElementById("aboutSection");
-  const downArrow = document.getElementById("downArrow");
+  const aboutArrow = document.getElementById("aboutArrow");
   const desktopAwards = document.querySelectorAll(".about-section .award-item");
   const desktopIndicator = document.getElementById("desktop-award-indicator");
   const projectTitleOverlay = document.getElementById("activeProjectTitle");
@@ -96,6 +96,18 @@
   const creativeTextRange = 3200; // CREATIVE CODING: strip, then the featured video, then exit
   const totalScroll =
     maxScroll + motionDelay + motionTextRange + brandingTextRange + creativeTextRange;
+
+  // Where each section starts, and where the section menu lands for it: the
+  // about text fully shown, or the first project of a category centred.
+  const motionSectionStart = maxScroll + motionDelay;
+  const brandingSectionStart = motionSectionStart + motionTextRange;
+  const creativeSectionStart = brandingSectionStart + brandingTextRange;
+  const sectionTargets = {
+    about: maxScroll,
+    motion: motionSectionStart + motionTextRange * (0.5 / scrollVideosMotion.length),
+    branding: brandingSectionStart + brandingTextRange * (0.5 / scrollVideosBranding.length),
+    creative: creativeSectionStart + creativeTextRange * 0.25, // strip in place
+  };
 
   // scrollProgress = smoothed/rendered value, recalculated every animation frame.
   // scrollTarget   = raw destination, nudged instantly by wheel/trackpad input.
@@ -281,9 +293,11 @@ vid.addEventListener("click", () => {
     let minDistance = Infinity;
 
     videos.forEach((vid, i) => {
-      // Start downloading a video when it's within ~1.5 slots of its turn
-      // (backs up the lazy IntersectionObserver, which only runs on repaint).
-      if (prog > 0 && (prog - i * step) / step > -1.5) loadLazyVideo(vid);
+      // Download a video when it's within ~1.5 slots of its turn, ahead or
+      // behind — not ones long passed (e.g. after a section-menu jump).
+      // Backs up the lazy IntersectionObserver, which only runs on repaint.
+      const slot = (prog - i * step) / step;
+      if (prog > 0 && slot > -1.5 && slot < 1.5) loadLazyVideo(vid);
 
       let vP = Math.min(Math.max((prog - i * step) / step, 0), 1);
 
@@ -407,6 +421,7 @@ vid.addEventListener("click", () => {
   };
 
   const render = (scrollProgress) => {
+      updateSectionNav(scrollProgress); // defined below; render only runs from events, after setup
       // About Section Opacity
       const aInS = maxScroll - 400,
         aInE = maxScroll;
@@ -423,7 +438,10 @@ vid.addEventListener("click", () => {
 
       aboutSection.style.opacity = currentAboutOpacity;
       aboutSection.style.pointerEvents = currentAboutOpacity > 0.5 ? "auto" : "none";
-      if (downArrow) downArrow.style.opacity = currentAboutOpacity;
+      if (aboutArrow) {
+        aboutArrow.style.opacity = currentAboutOpacity;
+        aboutArrow.style.pointerEvents = currentAboutOpacity > 0.5 ? "auto" : "none";
+      }
 
       // Main Video Transform (eased zoom-in, then eased slide-out).
       // Starts from the same 1.5 scale .video-inner has in style.css, so the
@@ -579,6 +597,7 @@ if (creativeTextProg >= 0.8) {
 
     if (Math.abs(diff) < SCROLL_SETTLE_EPSILON) {
       scrollProgress = scrollTarget;
+      lazyPaused = false; // menu jump finished: load what's around the landing spot
       render(scrollProgress);
       rafId = null;
       return;
@@ -597,6 +616,7 @@ if (creativeTextProg >= 0.8) {
     "wheel",
     (e) => {
       const delta = normalizeWheelDelta(e);
+      lazyPaused = false;
       scrollTarget = Math.max(0, Math.min(scrollTarget + delta, totalScroll));
       requestTick();
     },
@@ -619,6 +639,7 @@ if (creativeTextProg >= 0.8) {
     (e) => {
       if (lastTouchY === null) return;
       const y = e.touches[0].clientY;
+      lazyPaused = false;
       scrollTarget = Math.max(0, Math.min(scrollTarget + (lastTouchY - y) * TOUCH_SPEED, totalScroll));
       lastTouchY = y;
       requestTick();
@@ -631,6 +652,42 @@ if (creativeTextProg >= 0.8) {
 
   // Positions depend on the viewport size, so redraw when it changes.
   window.addEventListener("resize", () => render(scrollProgress));
+
+  // --- Section menu ---
+  // Clicking a category glides the scroll engine to its start. Videos the jump
+  // flies past aren't downloaded (lazyPaused) - only those around the landing.
+  const sectionNav = document.getElementById("sectionNav");
+  const sectionLinks = Array.from(sectionNav.querySelectorAll("a"));
+  sectionLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const target = sectionTargets[link.dataset.section];
+      if (target === undefined) return;
+      lazyPaused = Math.abs(target - scrollProgress) > window.innerHeight;
+      scrollTarget = target;
+      requestTick();
+    });
+  });
+
+  // The about section's down arrow continues to Motion Design.
+  if (aboutArrow) {
+    aboutArrow.addEventListener("click", () => {
+      sectionNav.querySelector('a[data-section="motion"]').click();
+    });
+  }
+
+  // Highlight the section currently on screen.
+  const updateSectionNav = (sp) => {
+    let current = null;
+    if (sp >= creativeSectionStart) current = "creative";
+    else if (sp >= brandingSectionStart) current = "branding";
+    else if (sp >= motionSectionStart) current = "motion";
+    else if (sp >= maxScroll * 0.8) current = "about";
+    sectionLinks.forEach((l) => l.classList.toggle("active", l.dataset.section === current));
+    // Only show the menu from the about section on, never on the hero.
+    sectionNav.classList.toggle("visible", current !== null);
+  };
+  updateSectionNav(0);
 })();
 
 // --- Lazy video loading ---
@@ -638,8 +695,12 @@ if (creativeTextProg >= 0.8) {
 // nothing heavy downloads when the page opens. The real src is set once a video
 // comes within about a screen of the viewport. Runs after the main script so
 // the cloned creative-coding videos are included.
+// True while the section menu glides across the page, so videos flown past
+// aren't downloaded. Cleared when the jump settles or the user scrolls.
+var lazyPaused = false;
+
 function loadLazyVideo(v) {
-  if (!v || !v.dataset.src) return;
+  if (!v || !v.dataset.src || lazyPaused) return;
   // Paused-until-clicked videos only need their first frame; autoplaying ones
   // start buffering as soon as play() runs.
   v.preload = v.autoplay ? "auto" : "metadata";
@@ -658,7 +719,8 @@ function loadLazyVideo(v) {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         loadLazyVideo(entry.target);
-        lazyObserver.unobserve(entry.target);
+        // Skipped during a menu jump? Keep watching so it loads next time.
+        if (!entry.target.dataset.src) lazyObserver.unobserve(entry.target);
       });
     },
     { rootMargin: "100% 50%" }
