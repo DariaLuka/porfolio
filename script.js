@@ -281,6 +281,10 @@ vid.addEventListener("click", () => {
     let minDistance = Infinity;
 
     videos.forEach((vid, i) => {
+      // Start downloading a video when it's within ~1.5 slots of its turn
+      // (backs up the lazy IntersectionObserver, which only runs on repaint).
+      if (prog > 0 && (prog - i * step) / step > -1.5) loadLazyVideo(vid);
+
       let vP = Math.min(Math.max((prog - i * step) / step, 0), 1);
 
       const centerY = window.innerHeight * 0.25; 
@@ -465,6 +469,12 @@ vid.addEventListener("click", () => {
 // only drives the panel's vertical position (up & out) and the coop reveal.
 positionCreativePanel(creativeTextProg);
 
+// The creative panel clips its contents (overflow: hidden), so the lazy
+// loader's look-ahead can't see them coming; start them from scroll position
+// instead, a little before each part rises into view.
+if (brandingTextProg > 0.6) creativeItems.forEach(loadLazyVideo);
+if (creativeTextProg > 0.2 && ccFeature) loadLazyVideo(ccFeature);
+
 // Reveal the coop message as the panel slides up and out of view.
 if (creativeTextProg >= 0.8) {
   cooperationMessage.classList.add("show");
@@ -621,4 +631,37 @@ if (creativeTextProg >= 0.8) {
 
   // Positions depend on the viewport size, so redraw when it changes.
   window.addEventListener("resize", () => render(scrollProgress));
+})();
+
+// --- Lazy video loading ---
+// Videos in index.html carry data-src instead of src (plus a poster image), so
+// nothing heavy downloads when the page opens. The real src is set once a video
+// comes within about a screen of the viewport. Runs after the main script so
+// the cloned creative-coding videos are included.
+function loadLazyVideo(v) {
+  if (!v || !v.dataset.src) return;
+  // Paused-until-clicked videos only need their first frame; autoplaying ones
+  // start buffering as soon as play() runs.
+  v.preload = v.autoplay ? "auto" : "metadata";
+  v.src = v.dataset.src;
+  delete v.dataset.src;
+}
+
+(function () {
+  const lazyVideos = document.querySelectorAll("video[data-src]");
+  if (!("IntersectionObserver" in window)) {
+    lazyVideos.forEach(loadLazyVideo);
+    return;
+  }
+  const lazyObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        loadLazyVideo(entry.target);
+        lazyObserver.unobserve(entry.target);
+      });
+    },
+    { rootMargin: "100% 50%" }
+  );
+  lazyVideos.forEach((v) => lazyObserver.observe(v));
 })();

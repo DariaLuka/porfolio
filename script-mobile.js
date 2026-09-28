@@ -57,6 +57,7 @@
             for (let i = 0; i < 3; i++) {
                 const v = document.createElement("video");
                 v.src = SRC;
+                v.poster = "posters/reel_small.jpg";
                 v.muted = true;
                 v.loop = true;
                 v.playsInline = true;
