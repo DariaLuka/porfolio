@@ -124,6 +124,20 @@
     opacity: 0.6;
   }
 
+  #mobileTextWrapper .about-intro {
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+
+  #mobileTextWrapper .profile-photo {
+    width: 72px;
+  }
+
+  #mobileTextWrapper .about-intro p {
+    margin: 0;
+  }
+
   #mobileTextWrapper p {
     font-size: 1rem;
     line-height: 1.5;

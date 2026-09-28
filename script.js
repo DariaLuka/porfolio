@@ -1,3 +1,24 @@
+// --- Video loading indicator ---
+// Toggles .is-loading (see style.css) on every <video>, including ones created
+// later from JS (award previews, mobile background). Media events don't bubble,
+// so listen in the capture phase on document to catch them all.
+(function () {
+  const HAVE_CURRENT_DATA = 2;
+  const setLoading = (e) => e.target.tagName === "VIDEO" && e.target.classList.add("is-loading");
+  const setReady = (e) => e.target.tagName === "VIDEO" && e.target.classList.remove("is-loading");
+
+  ["loadstart", "emptied"].forEach((t) => document.addEventListener(t, setLoading, true));
+  ["loadeddata", "canplay", "seeked", "playing", "error"].forEach((t) =>
+    document.addEventListener(t, setReady, true)
+  );
+
+  document.querySelectorAll("video").forEach((v) => {
+    if (v.readyState < HAVE_CURRENT_DATA && v.networkState !== v.NETWORK_NO_SOURCE) {
+      v.classList.add("is-loading");
+    }
+  });
+})();
+
 (function () {
   // --- DOM Elements ---
   const videoInner = document.getElementById("videoInner");
@@ -42,7 +63,9 @@
   computeCreativeSetWidth();
   window.addEventListener("resize", computeCreativeSetWidth);
 
-  const creativeItems = Array.from(document.querySelectorAll(".creative-item"));
+  const ccFeature = document.getElementById("ccFeature");
+  // Hover label / click-to-play behave the same for the strip and the featured video.
+  const creativeItems = Array.from(document.querySelectorAll(".creative-item, .creative-feature"));
   const aboutSection = document.getElementById("aboutSection");
   const downArrow = document.getElementById("downArrow");
   const desktopAwards = document.querySelectorAll(".about-section .award-item");
@@ -70,7 +93,7 @@
   const motionDelay = 500;
   const motionTextRange = 3200;
   const brandingTextRange = 3200;
-  const creativeTextRange = 1600; // CREATIVE CODING: shorter -> less scrolling to cross the whole strip
+  const creativeTextRange = 3200; // CREATIVE CODING: strip, then the featured video, then exit
   const totalScroll =
     maxScroll + motionDelay + motionTextRange + brandingTextRange + creativeTextRange;
 
@@ -221,8 +244,9 @@ vid.addEventListener("click", () => {
     item.addEventListener("mouseenter", (e) => {
       if (currentAboutOpacity < 0.5) return;
       const rect = item.getBoundingClientRect();
-      let y = rect.top + rect.height / 2 - 210;
-      y = Math.max(10, Math.min(y, window.innerHeight - 430));
+      const indicatorHeight = desktopIndicator.offsetHeight || 420;
+      let y = rect.top + rect.height / 2 - indicatorHeight / 2;
+      y = Math.max(10, Math.min(y, window.innerHeight - indicatorHeight - 10));
 
       const indicatorWidth = desktopIndicator.offsetWidth || 240;
       const xOffset = 100;
@@ -338,21 +362,32 @@ vid.addEventListener("click", () => {
   //   2. once it is on screen, the video carousel rises in from the bottom too
   //      (a short lag behind the title);
   //   3. the section holds while the carousel auto-scrolls sideways;
-  //   4. the whole panel slides UP and out as you keep scrolling (reveals coop).
+  //   4. the carousel slides up and out, the title keeps running behind;
+  //   5. the featured video (LMF) rises into the centre, in front of the title;
+  //   6. the whole panel slides UP and out as you keep scrolling (reveals coop).
   const positionCreativePanel = (prog) => {
     if (!creativeCarousel) return;
     const H = window.innerHeight;
     const p = Math.min(Math.max(prog, 0), 1);
     const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
 
-    // title rises over [0, 0.15]; videos rise over [0.1, 0.32] (start once the
-    // title is mostly on screen). 1 = off-screen below, 0 = fully in place.
-    ccTitleEnterY = (1 - easeInOutCubic(clamp01(p / 0.15))) * H;
-    ccTrackEnterY = (1 - easeInOutCubic(clamp01((p - 0.1) / 0.22))) * H;
+    // title rises over [0, 0.08]; strip rises over [0.05, 0.17] (starts once
+    // the title is mostly on screen), holds, then leaves upward over [0.34, 0.46].
+    // 1 = off-screen below, 0 = fully in place.
+    ccTitleEnterY = (1 - easeInOutCubic(clamp01(p / 0.08))) * H;
+    ccTrackEnterY =
+      (1 - easeInOutCubic(clamp01((p - 0.05) / 0.12))) * H -
+      easeInOutCubic(clamp01((p - 0.34) / 0.12)) * H * 1.1;
 
-    // exit: slide the whole panel up and out after the hold.
+    // featured video rises into the centre over [0.42, 0.56], then holds.
+    if (ccFeature) {
+      const fy = (1 - easeInOutCubic(clamp01((p - 0.42) / 0.14))) * H;
+      ccFeature.style.transform = `translate(-50%, calc(-50% + ${fy}px))`;
+    }
+
+    // exit: slide the whole panel up and out after the featured hold.
     let y = 0;
-    if (p >= 0.5) y = -easeInOutCubic((p - 0.5) / 0.5) * H * 1.25;
+    if (p >= 0.72) y = -easeInOutCubic((p - 0.72) / 0.28) * H * 1.25;
     creativeCarousel.style.transform = `translateY(${y}px)`;
   };
 
@@ -386,13 +421,18 @@ vid.addEventListener("click", () => {
       aboutSection.style.pointerEvents = currentAboutOpacity > 0.5 ? "auto" : "none";
       if (downArrow) downArrow.style.opacity = currentAboutOpacity;
 
-      // Main Video Transform (eased zoom-in, then eased slide-out)
+      // Main Video Transform (eased zoom-in, then eased slide-out).
+      // Starts from the same 1.5 scale .video-inner has in style.css, so the
+      // first scroll grows the video instead of snapping it smaller first.
       const vProg = Math.min(scrollProgress, maxScroll) / maxScroll;
-      let s = 1,
+      const MAIN_START_SCALE = 1.5;
+      const MAIN_END_SCALE = 3.5;
+      let s = MAIN_START_SCALE,
         y = 0;
-      if (vProg <= 0.5) s = 1 + easeInOutCubic(vProg / 0.5) * 2.5;
+      if (vProg <= 0.5)
+        s = MAIN_START_SCALE + easeInOutCubic(vProg / 0.5) * (MAIN_END_SCALE - MAIN_START_SCALE);
       else {
-        s = 3.5;
+        s = MAIN_END_SCALE;
         y = -window.innerHeight * 2 * easeInOutCubic((vProg - 0.5) * 2);
       }
       videoInner.style.transform = `translateY(${y}px) scale(${s})`;
@@ -426,7 +466,7 @@ vid.addEventListener("click", () => {
 positionCreativePanel(creativeTextProg);
 
 // Reveal the coop message as the panel slides up and out of view.
-if (creativeTextProg >= 0.62) {
+if (creativeTextProg >= 0.8) {
   cooperationMessage.classList.add("show");
 } else {
   cooperationMessage.classList.remove("show");
@@ -496,6 +536,29 @@ if (creativeTextProg >= 0.62) {
         }
       }
 
+      // --- Creative feature (LMF) overlay ---
+      // While the featured video holds in the centre (see positionCreativePanel),
+      // its description follows the cursor and "details" opens its Behance page.
+      if (ccFeature && creativeTextProg >= 0.5 && creativeTextProg < 0.78) {
+        const newTitle = ccFeature.getAttribute("data-desc") || "";
+        if (projectTitleOverlay.textContent !== newTitle) projectTitleOverlay.textContent = newTitle;
+        projectTitleOverlay.classList.add("show");
+        projectTitleOverlay.style.left = `${mouseX + 40}px`;
+        projectTitleOverlay.style.top = `${mouseY + 20}px`;
+
+        currentActiveVideo = ccFeature;
+        if (ccFeature.dataset.behance) {
+          videoControlButton.textContent = "details";
+          videoControlButton.classList.add("show");
+        } else {
+          videoControlButton.classList.remove("show");
+        }
+      } else if (currentActiveVideo === ccFeature) {
+        projectTitleOverlay.classList.remove("show");
+        videoControlButton.classList.remove("show");
+        currentActiveVideo = null;
+      }
+
   };
 
   // --- Animation Loop ---
@@ -529,4 +592,33 @@ if (creativeTextProg >= 0.62) {
     },
     { passive: true }
   );
+
+  // Touch screens that get this desktop layout (tablets wider than the mobile
+  // breakpoint) have no wheel: map vertical swipes onto the same scroll target.
+  const TOUCH_SPEED = 2.5;
+  let lastTouchY = null;
+  window.addEventListener(
+    "touchstart",
+    (e) => {
+      lastTouchY = e.touches[0].clientY;
+    },
+    { passive: true }
+  );
+  window.addEventListener(
+    "touchmove",
+    (e) => {
+      if (lastTouchY === null) return;
+      const y = e.touches[0].clientY;
+      scrollTarget = Math.max(0, Math.min(scrollTarget + (lastTouchY - y) * TOUCH_SPEED, totalScroll));
+      lastTouchY = y;
+      requestTick();
+    },
+    { passive: true }
+  );
+  window.addEventListener("touchend", () => {
+    lastTouchY = null;
+  });
+
+  // Positions depend on the viewport size, so redraw when it changes.
+  window.addEventListener("resize", () => render(scrollProgress));
 })();

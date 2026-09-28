@@ -66,12 +66,13 @@ padding-left: 1%;;
 
 .corner-text {
   opacity: 0;
-  animation: fadeSlideText 1s forwards cubic-bezier(0.77, 0, 0.175, 1);
+  /* Slow, soft intro: long duration + ease-out so the name drifts up and fades in gently */
+  animation: fadeSlideText 2.4s forwards cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .corner-text-inner {
   font-family: "Nohemi", sans-serif;
-  font-size: 15rem;
+  font-size: min(15rem, calc((100vw - 320px) / 5), 26vh); /* leave room for the links on the right */
   color: #fff;
 padding-top:3%;
   --text-scale: 1;
@@ -343,12 +344,22 @@ will-change: transform;
   }
 }
 
+/* Full-height column that centers its content in the space between the
+   (shrunken) header and the down arrow. Centering by translate(-50%) on a
+   fixed top% pushed tall content off the top on shorter screens; sizes below
+   also scale with viewport height so everything fits down to ~600px. */
 .about-section {
   position: fixed;
-  top: 40%;
+  top: 0;
+  bottom: 0;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
+  transform: translateX(-50%);
+  width: min(max(60vw, 640px), calc(100vw - 80px));
+  box-sizing: border-box;
+  padding: clamp(80px, 12vh, 130px) 0 clamp(70px, 10vh, 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   color: white;
   font-family: "Nohemi", sans-serif;
   opacity: 0;
@@ -356,23 +367,45 @@ will-change: transform;
   z-index: 20000;
 }
 .about-section .award-item {
-  line-height: 2;
+  line-height: clamp(1.6, 0.25vh + 1.4, 2);
 }
+/* Round profile photo on the left, intro text next to it. */
+.about-intro {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 3vw, 40px);
+}
+
+.profile-photo {
+  flex: 0 0 auto;
+  width: clamp(90px, 18vh, 180px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
 .about-text {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 2.3vh + 0.3vw, 1.5rem);
   line-height: 1.5;
+  margin: 0;
 }
 
 .about-meta {
-  margin-top: 40px;
+  margin-top: clamp(12px, 4vh, 40px);
   display: flex;
   justify-content: space-between;
-  font-size: 1rem;
+  gap: 40px;
+  font-size: clamp(0.8rem, 1.6vh, 1rem);
   opacity: 0.8;
 }
 
+.about-meta h3 {
+  margin: 0 0 clamp(4px, 1.2vh, 14px);
+}
+
 .clients-section {
-  margin-top: 28px;
+  margin-top: clamp(12px, 3vh, 28px);
 }
 
 .clients-section h4 {
@@ -381,7 +414,7 @@ will-change: transform;
   letter-spacing: 0.12em;
   text-transform: none;
   text-align: left;
-  margin: 0 0 16px;
+  margin: 0 0 clamp(8px, 1.6vh, 16px);
   opacity: 0.85;
 }
 
@@ -402,11 +435,11 @@ will-change: transform;
 
 .clients-row img {
   display: block;
-  max-height: 92px;
-  max-width: 230px;
+  max-height: clamp(40px, 8.5vh, 92px);
+  max-width: clamp(120px, 18vh, 230px);
   width: auto;
   height: auto;
-  padding: 14px 18px;
+  padding: clamp(6px, 1.3vh, 14px) clamp(10px, 1.7vh, 18px);
   background: rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   opacity: 0.96;
@@ -432,8 +465,8 @@ will-change: transform;
 
 #desktop-award-indicator {
   position: fixed;
-  width: 240px;
-  height: 420px;
+  height: min(420px, 70vh);
+  aspect-ratio: 4 / 7; /* 240x420 on large screens, shrinks on short ones */
   pointer-events: none;
   opacity: 0;
   transition: top 0.1s ease, left 0.1s ease, opacity 0.3s ease;
@@ -533,7 +566,7 @@ will-change: transform;
 
 #scrollText {
   font-family: "Nohemi", sans-serif;
-  font-size: 40rem;
+  font-size: min(40rem, 75vh);
   font-weight: 500;
   color: #fff;
   white-space: nowrap;
@@ -547,7 +580,7 @@ will-change: transform;
 .scrollTextItem {
   position: absolute;
   font-family: "Nohemi", sans-serif;
-  font-size: 40rem;
+  font-size: min(40rem, 75vh);
   font-weight: 500;
   color: #fff;
   white-space: nowrap;
@@ -615,7 +648,7 @@ will-change: transform;
   transform: translate(0, calc(-50% + 100vh)); /* start off-screen below; JS raises it */
   will-change: transform;
   font-family: "Nohemi", sans-serif;
-  font-size: 40rem;
+  font-size: min(40rem, 75vh);
   font-weight: 500;
   line-height: 1;
   color: #fff;
@@ -652,6 +685,22 @@ will-change: transform;
     drop-shadow(0 0 40px rgba(255, 255, 255, 0.04));
 }
 
+/* Featured creative-coding work (LMF): centred, in front of the title band.
+   JS drives its vertical entrance (rises from below after the strip leaves). */
+.creative-feature {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(70vw, 124vh); /* 16:9, fits both short and narrow screens */
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 8px;
+  transform: translate(-50%, calc(-50% + 100vh)); /* start off-screen below */
+  will-change: transform;
+  pointer-events: auto;
+  z-index: 3;
+}
+
 .cooperation-message {
   position: fixed;
   bottom: 30px;
@@ -665,10 +714,58 @@ will-change: transform;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.8s ease;
-  z-index: 1000;
+  /* above .scroll-videos-wrapper (5000), which covers the screen and would
+     otherwise swallow clicks on the email link */
+  z-index: 6000;
     font-family: "Nohemi", sans-serif;
-  font-size: 9rem;
+  font-size: min(9rem, 7vw, 16vh);
+  right: 30px;
+  line-height: 1.05;
 }
 .cooperation-message.show {
   opacity: 1;
+}
+
+/* Only the link is clickable, and only once the message is visible. */
+.coop-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+.cooperation-message.show .coop-link {
+  pointer-events: auto;
+}
+.coop-link:hover {
+  opacity: 0.7;
+}
+
+/* --- Video loading state ---
+   Added/removed by script.js while a <video> has no frame to show yet.
+   A video's background is only visible until its first frame paints, so
+   this shimmer + spinner disappears on its own once the video is ready. */
+@keyframes video-shimmer {
+  from { background-position: 150% 0, center; }
+  to   { background-position: -50% 0, center; }
+}
+
+video.is-loading {
+  background-color: #111;
+  background-image:
+    linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.06) 50%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='16' fill='none' stroke='%23ffffff' stroke-opacity='0.15' stroke-width='3'/%3E%3Cpath d='M20 4a16 16 0 0 1 16 16' fill='none' stroke='%23ffffff' stroke-opacity='0.8' stroke-width='3' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 20 20' to='360 20 20' dur='0.9s' repeatCount='indefinite'/%3E%3C/path%3E%3C/svg%3E");
+  background-size: 200% 100%, 40px 40px;
+  background-repeat: no-repeat;
+  background-position: 150% 0, center;
+  animation: video-shimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  video.is-loading { animation: none; }
+}
+
+/* Touch screens wider than the mobile breakpoint (e.g. tablets in landscape)
+   get the desktop layout; there is no mouse, so drop the custom cursor. */
+@media (hover: none) and (pointer: coarse) {
+  body { cursor: auto; }
+  .custom-cursor { display: none; }
 }
